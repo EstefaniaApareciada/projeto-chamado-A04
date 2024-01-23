@@ -1,0 +1,66 @@
+import sqlite3
+
+# Função para conectar ao banco de dados ou criar um novo se não existir
+def conectar_banco_dados():
+    # Conectar ao banco de dados (o arquivo será criado se não existir)
+    conexao = sqlite3.connect("exemplo.db")
+    print("Conexão estabelecida com sucesso.")
+    return conexao
+
+# Função para criar uma tabela no banco de dados
+def criar_tabela(conexao):
+    # Criação de uma tabela chamada 'usuarios' com dois campos: id e nome
+    cursor = conexao.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY,
+            nome TEXT NOT NULL
+        )
+    """)
+    conexao.commit()
+    print("Tabela 'usuarios' criada com sucesso.")
+
+# Função para inserir dados na tabela
+def inserir_dados(conexao, nome):
+    cursor = conexao.cursor()
+    cursor.execute("INSERT INTO usuarios (nome) VALUES (?)", (nome,))
+    conexao.commit()
+    print(f"Dados inseridos com sucesso: {nome}")
+
+# Função para recuperar (ler) dados da tabela
+def recuperar_dados(conexao):
+    cursor = conexao.cursor()
+    cursor.execute("SELECT * FROM usuarios")
+    dados = cursor.fetchall()
+    print("Dados recuperados:")
+    for dado in dados:
+        print(dado)
+
+# Função para atualizar dados na tabela
+def atualizar_dados(conexao, id_usuario, novo_nome):
+    cursor = conexao.cursor()
+    cursor.execute("UPDATE usuarios SET nome=? WHERE id=?", (novo_nome, id_usuario))
+    conexao.commit()
+    print(f"Dados atualizados com sucesso para o usuário de ID {id_usuario}")
+
+# Conectar ao banco de dados
+conexao = conectar_banco_dados()
+
+# Criar tabela (se não existir)
+criar_tabela(conexao)
+
+# Inserir dados
+inserir_dados(conexao, "João")
+inserir_dados(conexao, "Maria")
+
+# Recuperar e exibir dados
+recuperar_dados(conexao)
+
+# Atualizar dados (por exemplo, alterar o nome do usuário com ID 1)
+atualizar_dados(conexao, 1, "João Silva")
+
+# Recuperar e exibir dados novamente
+recuperar_dados(conexao)
+
+# Fechar a conexão com o banco de dados ao final
+conexao.close()
